@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContainerizedSonarScanProj", "ContainerizedSonarScanProj\ContainerizedSonarScanProj.csproj", "{64462879-22BE-470F-BCED-5D2BAA86D009}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{F6939614-C750-4E22-A508-389AF4ECC22C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{64462879-22BE-470F-BCED-5D2BAA86D009}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64462879-22BE-470F-BCED-5D2BAA86D009}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64462879-22BE-470F-BCED-5D2BAA86D009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6939614-C750-4E22-A508-389AF4ECC22C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6939614-C750-4E22-A508-389AF4ECC22C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6939614-C750-4E22-A508-389AF4ECC22C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6939614-C750-4E22-A508-389AF4ECC22C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
