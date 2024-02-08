@@ -1,0 +1,44 @@
+<Project ToolsVersion="4.0" DefaultTargets="build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <DotNetSdkImage>dotnet-build</DotNetSdkImage>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <PerformSonarScan>false</PerformSonarScan>
+        <SonarToken>x</SonarToken>
+    </PropertyGroup>
+
+    <Target Name="PrepPodman">
+        <Exec Command="podman build -t $(DotNetSdkImage) -f $(MSBuildProjectDirectory)/Dockerfile" />
+    </Target>
+    
+    <Target Name="VerifySonarToken" Condition=" '$(PerformSonarScan)'=='true' ">
+        <Error Text="SonarToken must be specified" Condition=" '$(SonarToken)'=='x' "/>
+    </Target>
+
+    <Target Name="StartSonarScanner" Condition=" '$(PerformSonarScan)'=='true' " BeforeTargets="BuildPodman;Build" DependsOnTargets="VerifySonarToken">
+        <Exec Command="dotnet sonarscanner begin /o:lukegeor /k:lukegeor_containerscan /d:sonar.token=$(SonarToken) /d:sonar.host.url=https://sonarcloud.io /d:sonar.verbose=true /d:sonar.log.level=TRACE" />
+    </Target>
+
+    <Target Name="EndSonarScanner" Condition=" '$(PerformSonarScan)'=='true' " AfterTargets="BuildPodman;TestPodman;Build;Test" DependsOnTargets="VerifySonarToken">
+        <Exec Command="dotnet sonarscanner end /d:sonar.token=$(SonarToken)" />
+    </Target>
+
+    <Target Name="BuildPodman" DependsOnTargets="PrepPodman">
+        <Message Text="SONARQUBE_SCANNER_PARAMS is ---$(SONARQUBE_SCANNER_PARAMS)---" Importance="high" IsCritical="true" />
+        <Exec Command="podman run -i --rm -w /ContainerizedSonarScan/build -v /tmp:/tmp -v $(MSBuildProjectDirectory)/..:/ContainerizedSonarScan:z $(DotNetSdkImage) dotnet publish -c Release -r $(RuntimeIdentifier) /ContainerizedSonarScan/ContainerizedSonarScan.sln" />
+    </Target>
+    
+    <Target Name="TestPodman" DependsOnTargets="PrepPodman;BuildPodman">
+        <Exec Command="podman run -i --rm -w /ContainerizedSonarScan/build -v /tmp:/tmp -v $(MSBuildProjectDirectory)/..:/ContainerizedSonarScan:z $(DotNetSdkImage) dotnet test --no-build -c Release -r $(RuntimeIdentifier) /ContainerizedSonarScan/ContainerizedSonarScan.sln" />
+    </Target>
+
+    <Target Name="Build">
+        <Message Text="SONARQUBE_SCANNER_PARAMS is ---$(SONARQUBE_SCANNER_PARAMS)---" Importance="high" IsCritical="true" />
+        <Exec Command="dotnet publish -c Release -r $(RuntimeIdentifier) $(MSBuildProjectDirectory)/../ContainerizedSonarScan.sln" />
+    </Target>
+
+    <Target Name="Test" DependsOnTargets="Build">
+        <Exec Command="dotnet test -c Release -r $(RuntimeIdentifier) $(MSBuildProjectDirectory)/../ContainerizedSonarScan.sln" />
+    </Target>
+</Project>
